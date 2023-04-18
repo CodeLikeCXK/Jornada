@@ -205,7 +205,7 @@ Material:
     - _groupShadowSetting: 1
     - _groupSpecular: 1
     m_Colors:
-    - _BaseColor: {r: 0.8962264, g: 0.15641688, b: 0.15641688, a: 1}
+    - _BaseColor: {r: 31.396227, g: 1.6290497, b: 1.6290497, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}
