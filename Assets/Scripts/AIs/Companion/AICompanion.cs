@@ -27,7 +27,14 @@ public class AICompanion : MonoBehaviour
     public GameObject AICompanionMesh;
     public Material VanishingMaterial;
     private List<Material> AI_Companion_Old_MaterialList;
-    private bool IsDisappering;
+    public bool IsDisappering;
+    public float dissolverate = 0.0125f;
+    public float RefreshRate = 0.025f;
+    public float DissolveScale = 50.0f;
+    public float DissolveWidth = 0.02f;
+    public float DissolveThreshold = 0.5f;
+
+
 
 
     [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
@@ -63,6 +70,10 @@ public class AICompanion : MonoBehaviour
         _animator = GetComponent<Animator>();
         agent.speed = walkingSpeed;
         IsDisappering = false;
+        VanishingMaterial.SetFloat("_DissolveScale", DissolveScale);
+        VanishingMaterial.SetFloat("_DissolveWidth", DissolveWidth);
+
+
     }
 
     void OnDrawGizmos()
@@ -110,22 +121,47 @@ public class AICompanion : MonoBehaviour
             Timer = MaxTime;
         }
         _animator.SetFloat("Speed",agent.velocity.magnitude);
+        
+    }
 
-        if (IsDisappering == true)
+    public void TeammateOff()
+    {
+        Material[] Mat = new Material[3] { VanishingMaterial, VanishingMaterial,VanishingMaterial };
+            AICompanionMesh.transform.GetComponent<Renderer>().materials = Mat;
+            StartCoroutine(DissolveCo());
+    }
+    
+    public void TeammateOn()
+    {
+        StartCoroutine(UnDissolveCo());
+
+    }
+
+    IEnumerator DissolveCo()
+    {
+        float Counter = 0;
+        while (VanishingMaterial.GetFloat("_DissolveAmount") < DissolveThreshold)
         {
-            
+            Counter += dissolverate;
+            VanishingMaterial.SetFloat("_DissolveAmount", Counter);
+            yield return new WaitForSeconds(RefreshRate);
+        }
+
+    }
+    
+    IEnumerator UnDissolveCo()
+    {
+        float Counter = VanishingMaterial.GetFloat("_DissolveAmount");
+        while (VanishingMaterial.GetFloat("_DissolveAmount") >= Counter)
+        {
+            Counter -= dissolverate;
+            VanishingMaterial.SetFloat("_DissolveAmount", Counter);
+            yield return new WaitForSeconds(RefreshRate);
         }
     }
 
-    public void ChangeMaterial()
+    void OnDestroy()
     {
-        Material[] Mat = new Material[3] { VanishingMaterial, VanishingMaterial,VanishingMaterial };
-        AICompanionMesh.transform.GetComponent<Renderer>().materials = Mat;
-        IsDisappering = true;
-    }
-    
-    private void SetHeight(float height)
-    {
-       
+        VanishingMaterial.SetFloat("_DissolveAmount", 0);
     }
 }

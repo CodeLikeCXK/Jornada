@@ -408,7 +408,15 @@ namespace StarterAssets
         {
             if (_input.CallCompanion)
             {
-                AI_Companion.GetComponent<AICompanion>().ChangeMaterial();
+                if ( AI_Companion.GetComponent<AICompanion>().IsDisappering == false)
+                {
+                    AI_Companion.GetComponent<AICompanion>().TeammateOff();
+                }
+                else
+                {
+                    AI_Companion.GetComponent<AICompanion>().TeammateOn();
+
+                }
             }
         }
     }

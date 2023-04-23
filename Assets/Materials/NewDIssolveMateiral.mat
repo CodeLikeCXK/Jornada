@@ -96,6 +96,9 @@ Material:
     - _CutoffHeight: -8.3249855
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DissolveAmount: 0
+    - _DissolveScale: 50
+    - _DissolveWidth: 0.02
     - _DstBlend: 10
     - _DstBlendAlpha: 0
     - _EdgeScale: 10
@@ -105,7 +108,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _NoiseScale: 5.47
+    - _NoiseScale: 3.02
     - _NoiseStrength: 0.25
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -115,11 +118,11 @@ Material:
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 0.5
+    - _Speed: 0.05
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 1
-    - _Thickness: 0.01
+    - _Thickness: 0.24
     - _WorkflowMode: 1
     - _ZTest: 4
     - _ZWrite: 0
