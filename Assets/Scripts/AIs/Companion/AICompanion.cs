@@ -54,12 +54,7 @@ public class AICompanion : MonoBehaviour
     public LayerMask GroundLayers;
     
     [Tooltip("Variables for vanishing effects")]
-    [SerializeField] private float noiseStrength = 0.25f; 
-    public float objectHeight = 3.0f;
 
-    public float VanishingThrehold = 6.0f;
-
-    private float Dissolve_time = 0.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -68,7 +63,6 @@ public class AICompanion : MonoBehaviour
         _animator = GetComponent<Animator>();
         agent.speed = walkingSpeed;
         IsDisappering = false;
-        VanishingMaterial.SetFloat("_CutoffHeight", objectHeight);
     }
 
     void OnDrawGizmos()
@@ -119,19 +113,7 @@ public class AICompanion : MonoBehaviour
 
         if (IsDisappering == true)
         {
-            VanishingMaterial.SetFloat("_CutoffHeight", objectHeight);
-            Dissolve_time += Time.deltaTime * Mathf.PI * 0.15f;
-            print(Dissolve_time);
-            float height = objectHeight;
-            if (height <= VanishingThrehold)
-            {
-                height += Mathf.Sin(Dissolve_time) * (objectHeight * 10.0f / 2.0f);
-            }
-            else
-            {
-                height -= Mathf.Sin(Dissolve_time) * (objectHeight * 10.0f / 2.0f);
-            }
-            SetHeight(height);
+            
         }
     }
 
@@ -144,7 +126,6 @@ public class AICompanion : MonoBehaviour
     
     private void SetHeight(float height)
     {
-        VanishingMaterial.SetFloat("_CutoffHeight", height);
-        VanishingMaterial.SetFloat("_NoiseStrength", noiseStrength);
+       
     }
 }
