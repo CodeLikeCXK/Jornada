@@ -350,7 +350,9 @@ inline void InitializeNPRStandardSurfaceData(float2 uv, InputData inputData, out
     outSurfaceData.specularIntensity = 1;
     #endif
     outSurfaceData.emission = EmissionColor(pbrLightMap, shadingMap01, outSurfaceData.albedo, uv);
-
+    #if _USEDISSOLVEEFFECT
+    //WIP
+    #endif
    
 }
 

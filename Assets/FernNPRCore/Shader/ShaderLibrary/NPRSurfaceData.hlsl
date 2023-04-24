@@ -20,9 +20,8 @@ struct NPRSurfaceData
     half  innerLine;
 
     //add new variable for dissolve effect
-    half _DissolveThreshold;
-    half3 _DissolveNoise;
-    
+    half dissolve_value;
+    //WIP
     #if EYE
         half3 corneaNormalData;
         half3 irisNormalData;
