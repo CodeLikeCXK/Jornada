@@ -25,13 +25,11 @@ public class AICompanion : MonoBehaviour
     private bool _hasAnimator;
 
     public GameObject AICompanionMesh;
-    public Material VanishingMaterial;
+    private Material[] SkinnedMaterials;
     private List<Material> AI_Companion_Old_MaterialList;
     public bool IsDisappering;
     public float dissolverate = 0.0125f;
     public float RefreshRate = 0.025f;
-    public float DissolveScale = 50.0f;
-    public float DissolveWidth = 0.02f;
     public float DissolveThreshold = 0.5f;
 
 
@@ -70,9 +68,7 @@ public class AICompanion : MonoBehaviour
         _animator = GetComponent<Animator>();
         agent.speed = walkingSpeed;
         IsDisappering = false;
-        VanishingMaterial.SetFloat("_DissolveScale", DissolveScale);
-        VanishingMaterial.SetFloat("_DissolveWidth", DissolveWidth);
-
+        SkinnedMaterials = AICompanionMesh.transform.GetComponent<Renderer>().materials; 
         if(agent == null)
         {
             Debug.LogError("agent has not been assigned.", this);
@@ -127,47 +123,64 @@ public class AICompanion : MonoBehaviour
             Timer = MaxTime;
         }
         _animator.SetFloat("Speed",agent.velocity.magnitude);
-        
     }
 
     public void TeammateOff()
     {
-        Material[] Mat = new Material[3] { VanishingMaterial, VanishingMaterial,VanishingMaterial };
-            AICompanionMesh.transform.GetComponent<Renderer>().materials = Mat;
-            StartCoroutine(DissolveCo());
+        StartCoroutine(DissolveCo());
+        IsDisappering = false;
+
     }
     
     public void TeammateOn()
     {
         StartCoroutine(UnDissolveCo());
-
+        IsDisappering = true;
     }
 
     IEnumerator DissolveCo()
     {
-        float Counter = 0;
-        while (VanishingMaterial.GetFloat("_DissolveAmount") < DissolveThreshold)
+        if (SkinnedMaterials.Length > 0)
         {
-            Counter += dissolverate;
-            VanishingMaterial.SetFloat("_DissolveAmount", Counter);
-            yield return new WaitForSeconds(RefreshRate);
+            float Counter = 0;
+            while (SkinnedMaterials[0].GetFloat("_DissolveThreshold") < 1)
+            {
+                Counter += dissolverate;
+                for (int i = 0; i < SkinnedMaterials.Length; i++)
+                {
+                    SkinnedMaterials[i].SetFloat("_DissolveThreshold", Counter);
+
+                }
+                yield return new WaitForSeconds(RefreshRate);
+            }
         }
 
     }
     
     IEnumerator UnDissolveCo()
     {
-        float Counter = VanishingMaterial.GetFloat("_DissolveAmount");
-        while (VanishingMaterial.GetFloat("_DissolveAmount") >= Counter)
+        if (SkinnedMaterials.Length > 0)
         {
-            Counter -= dissolverate;
-            VanishingMaterial.SetFloat("_DissolveAmount", Counter);
-            yield return new WaitForSeconds(RefreshRate);
+            float Counter = 1;
+            if(SkinnedMaterials[0].GetFloat("_DissolveThreshold") >= 0)
+            {
+                Counter -= dissolverate;
+                for (int i = 0; i < SkinnedMaterials.Length; i++)
+                {
+                    SkinnedMaterials[i].SetFloat("_DissolveThreshold", Counter);
+                }
+                yield return new WaitForSeconds(RefreshRate);
+            }
         }
+
     }
 
     void OnDestroy()
     {
-        VanishingMaterial.SetFloat("_DissolveAmount", 0);
+        for (int i = 0; i < SkinnedMaterials.Length; i++)
+        {
+            SkinnedMaterials[i].SetFloat("_DissolveThreshold", 0);
+
+        }
     }
 }
