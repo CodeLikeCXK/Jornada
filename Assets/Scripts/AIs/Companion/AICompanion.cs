@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class AICompanion : MonoBehaviour
 {
     public Transform playerTransform;
     NavMeshAgent agent;
+    private Renderer _MeshRenderer;
     public float maxDistance = 2.0f;
     public float speedupDistance = 5.0f;
     public float offset = 1.0f;
@@ -27,7 +29,7 @@ public class AICompanion : MonoBehaviour
     public GameObject AICompanionMesh;
     private Material[] SkinnedMaterials;
     private List<Material> AI_Companion_Old_MaterialList;
-    public bool IsDisappering;
+    public bool IsDisappering = false;
     public float dissolverate = 0.0125f;
     public float RefreshRate = 0.025f;
     public float DissolveThreshold = 0.5f;
@@ -67,8 +69,8 @@ public class AICompanion : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
         agent.speed = walkingSpeed;
-        IsDisappering = false;
-        SkinnedMaterials = AICompanionMesh.transform.GetComponent<Renderer>().materials; 
+        _MeshRenderer = AICompanionMesh.transform.GetComponent<Renderer>();
+        SkinnedMaterials = _MeshRenderer.materials; 
         if(agent == null)
         {
             Debug.LogError("agent has not been assigned.", this);
@@ -128,14 +130,16 @@ public class AICompanion : MonoBehaviour
     public void TeammateOff()
     {
         StartCoroutine(DissolveCo());
-        IsDisappering = false;
+        _MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
+        
 
     }
     
     public void TeammateOn()
     {
         StartCoroutine(UnDissolveCo());
-        IsDisappering = true;
+        _MeshRenderer.shadowCastingMode = ShadowCastingMode.On;
+        
     }
 
     IEnumerator DissolveCo()
@@ -162,7 +166,7 @@ public class AICompanion : MonoBehaviour
         if (SkinnedMaterials.Length > 0)
         {
             float Counter = 1;
-            if(SkinnedMaterials[0].GetFloat("_DissolveThreshold") >= 0)
+            if(SkinnedMaterials[0].GetFloat("_DissolveThreshold") == 1)
             {
                 Counter -= dissolverate;
                 for (int i = 0; i < SkinnedMaterials.Length; i++)
@@ -173,6 +177,18 @@ public class AICompanion : MonoBehaviour
             }
         }
 
+    }
+
+    public void SetDisappearing(ref bool IsDisappering)
+    {
+        if (SkinnedMaterials[0].GetFloat("_DissolveThreshold") == 1)
+        {
+            IsDisappering = true;
+        }
+        else
+        {
+            IsDisappering = false;
+        }
     }
 
     void OnDestroy()
