@@ -36,7 +36,6 @@ half4 _EmissionColor;
 #if _USEDISSOLVEEFFECT
 //add space for dissolve effect
 half _DissolveThreshold;
-half4  _DissolveNoiseTex;
 #endif
 
 // Channel
