@@ -33,9 +33,11 @@ half4 _AngleRingShadowColor;
 half4 _MatCapColor;
 half4 _EmissionColor;
 
+#if _USEDISSOLVEEFFECT
 //add space for dissolve effect
 half _DissolveThreshold;
 half4  _DissolveNoiseTex;
+#endif
 
 // Channel
 half4 _PBRMetallicChannel;
@@ -352,7 +354,10 @@ inline void InitializeNPRStandardSurfaceData(float2 uv, InputData inputData, out
     outSurfaceData.emission = EmissionColor(pbrLightMap, shadingMap01, outSurfaceData.albedo, uv);
     #if _USEDISSOLVEEFFECT
     //WIP
-    #endif
+    half dissolve_value = SAMPLE_TEXTURE2D(_DissolveNoiseTex, sampler_DissolveNoiseTex, uv).r;
+    clip(dissolve_value - _DissolveThreshold);
+    #endif 
+    
    
 }
 
