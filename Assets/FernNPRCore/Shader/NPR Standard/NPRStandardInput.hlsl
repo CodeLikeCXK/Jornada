@@ -33,6 +33,10 @@ half4 _AngleRingShadowColor;
 half4 _MatCapColor;
 half4 _EmissionColor;
 
+//add space for dissolve effect
+half _DissolveThreshold;
+half4  _DissolveNoiseTex;
+
 // Channel
 half4 _PBRMetallicChannel;
 half4 _PBRSmothnessChannel;
@@ -233,10 +237,15 @@ TEXTURE2D(_AnisoShiftMap);       SAMPLER(sampler_AnisoShiftMap);
 TEXTURE2D(_ShadingMap01);       SAMPLER(sampler_ShadingMap01);
 TEXTURE2D(_EmissionTex);       SAMPLER(sampler_EmissionTex);
 
+
 #if FACE
     TEXTURE2D(_SDFFaceTex);      SAMPLER(sampler_SDFFaceTex);
 #endif
 
+// add sampler for dissolve effect
+#if _USEDISSOLVEEFFECT
+TEXTURE2D(_DissolveNoiseTex);       SAMPLER(sampler_DissolveNoiseTex);
+#endif
 
 #ifdef _SPECULAR_SETUP
     #define SAMPLE_METALLICSPECULAR(uv) SAMPLE_TEXTURE2D(_SpecGlossMap, sampler_SpecGlossMap, uv)
@@ -299,6 +308,7 @@ half3 EmissionColor(half4 pbrLightMap, half4 shadingMap01, half3 albedo, half2 u
         return parallxOffset;
     }
 #endif
+
 
 inline half SpecularAA(half3 normalWS, half smoothness)
 {

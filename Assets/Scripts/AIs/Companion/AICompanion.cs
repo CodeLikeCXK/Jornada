@@ -73,6 +73,11 @@ public class AICompanion : MonoBehaviour
         VanishingMaterial.SetFloat("_DissolveScale", DissolveScale);
         VanishingMaterial.SetFloat("_DissolveWidth", DissolveWidth);
 
+        if(agent == null)
+        {
+            Debug.LogError("agent has not been assigned.", this);
+            // Notice, that we pass 'this' as a context object so that Unity will highlight this object when clicked.
+        }
 
     }
 
@@ -80,8 +85,9 @@ public class AICompanion : MonoBehaviour
     {
         if (velocity)
         {
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position,transform.position + agent.velocity);
+           // Vector3 AIposition = transform.position;
+           //Gizmos.color = Color.green;
+           // Gizmos.DrawLine(AIposition, AIposition + agent.velocity);
         }
 
         if (path)

@@ -26,7 +26,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 36078ab0369161e49a29d349ae3e0739,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 36078ab0369161e49a29d349ae3e0739,
         type: 3}
@@ -261,7 +261,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739,
         type: 3}
       propertyPath: m_Name
-      value: Companion Variant
+      value: Companion
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 36078ab0369161e49a29d349ae3e0739,
         type: 3}
@@ -507,7 +507,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  TransformOffset: {x: 1, y: 1, z: 1}
+  maxDistance: 2
+  speedupDistance: 5
+  offset: 1
+  walkingSpeed: 2
+  runningSpeed: 5
+  MaxTime: 1
+  velocity: 0
+  desiredvelocity: 0
+  path: 0
+  AICompanionMesh: {fileID: 7014331486288751571}
+  VanishingMaterial: {fileID: 2100000, guid: a93d7df0e6202954e9b918ae8b86f970, type: 2}
+  IsDisappering: 0
+  dissolverate: 0.0125
+  RefreshRate: 0.025
+  DissolveScale: 50
+  DissolveWidth: 0.02
+  DissolveThreshold: 0.5
   Gravity: -15
   JumpTimeout: 0.5
   FallTimeout: 0.15
@@ -517,3 +533,9 @@ MonoBehaviour:
   GroundLayers:
     serializedVersion: 2
     m_Bits: 1
+--- !u!1 &7014331486288751571 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2552327617057372446, guid: 36078ab0369161e49a29d349ae3e0739,
+    type: 3}
+  m_PrefabInstance: {fileID: 4772787712569348813}
+  m_PrefabAsset: {fileID: 0}

@@ -18,6 +18,10 @@ struct NPRSurfaceData
     half  specularIntensity;
     half  diffuseID;
     half  innerLine;
+
+    //add new variable for dissolve effect
+    half _DissolveThreshold;
+    half3 _DissolveNoise;
     
     #if EYE
         half3 corneaNormalData;

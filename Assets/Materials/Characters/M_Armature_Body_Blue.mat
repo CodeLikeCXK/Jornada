@@ -35,6 +35,7 @@ Material:
   m_InvalidKeywords:
   - _IS_FILTER_LIGHTCOLOR_ON
   - _METALLICGLOSSMAP
+  - _USEDISSOLVENOISETEX
   - _USEHALFLAMBERT_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -67,6 +68,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DiffuseRampMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DissolveNoiseTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -145,6 +150,7 @@ Material:
     - _DepthShadowThresoldOffset: 0
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
+    - _DissolveThreshold: 0
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EmissionColorAlbedoWeight: 0
@@ -184,6 +190,7 @@ Material:
     - _Surface: 0
     - _UVSec: 0
     - _UseDepthShadow: 0
+    - _UseDissolveNoiseTex: 1
     - _UseEmissionTex: 0
     - _UseHalfLambert: 1
     - _UseRadianceOcclusion: 0
@@ -198,6 +205,7 @@ Material:
     - _group1: 1
     - _groupAdditionLight: 1
     - _groupClearCoat: 1
+    - _groupDissolveSetting: 0
     - _groupEmission: 0
     - _groupEnvironment: 1
     - _groupOutline: 1
