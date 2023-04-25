@@ -63,7 +63,8 @@ public class AICompanion : MonoBehaviour
     [Tooltip("What layers the character uses as ground")]
     public LayerMask GroundLayers;
     
-    [Tooltip("Variables for vanishing effects")]
+    [Tooltip("For Jump/Nav mesh link movements")]
+    public AnimationCurve m_Curve;
 
 
     // Start is called before the first frame update
@@ -109,6 +110,7 @@ public class AICompanion : MonoBehaviour
     void Update()
     {
         Move();
+        Jump();
     }
 
     public void Move()
@@ -135,6 +137,30 @@ public class AICompanion : MonoBehaviour
         _animator.SetFloat("Speed",agent.velocity.magnitude);
        
 
+    }
+
+    public void Jump()
+    {
+        if (agent.isOnOffMeshLink)
+        {
+            StartCoroutine(Curve(agent, 0.5f));
+            agent.CompleteOffMeshLink();
+        }
+    }
+    
+    IEnumerator Curve(NavMeshAgent agent, float duration)
+    {
+        OffMeshLinkData data = agent.currentOffMeshLinkData;
+        Vector3 startPos = agent.transform.position;
+        Vector3 endPos = data.endPos + Vector3.up * agent.baseOffset;
+        float normalizedTime = 0.0f;
+        while (normalizedTime < 1.0f)
+        {
+            float yOffset = m_Curve.Evaluate(normalizedTime);
+            agent.transform.position = Vector3.Lerp(startPos, endPos, normalizedTime) + yOffset * Vector3.up;
+            normalizedTime += Time.deltaTime / duration;
+            yield return null;
+        }
     }
 
     private void OnFootstep(AnimationEvent animationEvent)
