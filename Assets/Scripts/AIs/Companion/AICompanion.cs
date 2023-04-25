@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +24,8 @@ public class AICompanion : MonoBehaviour
     
     private Animator _animator;
     private bool _hasAnimator;
+    private CharacterController _controller;
+
 
     public GameObject AICompanionMesh;
     private Material[] SkinnedMaterials;
@@ -34,6 +35,8 @@ public class AICompanion : MonoBehaviour
     public float RefreshRate = 0.025f;
     public float DissolveThreshold = 0.5f;
 
+    public AudioClip[] FootstepAudioClips;
+    [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
 
 
@@ -83,9 +86,9 @@ public class AICompanion : MonoBehaviour
     {
         if (velocity)
         {
-           // Vector3 AIposition = transform.position;
-           //Gizmos.color = Color.green;
-           // Gizmos.DrawLine(AIposition, AIposition + agent.velocity);
+           Vector3 AIposition = transform.position;
+           Gizmos.color = Color.green;
+           Gizmos.DrawLine(AIposition, AIposition + agent.velocity);
         }
 
         if (path)
@@ -104,6 +107,11 @@ public class AICompanion : MonoBehaviour
 
     // Update is called once per frame
     void Update()
+    {
+        Move();
+    }
+
+    public void Move()
     {
         Timer -= Time.deltaTime;
         if (Timer < 0.0f)
@@ -125,8 +133,22 @@ public class AICompanion : MonoBehaviour
             Timer = MaxTime;
         }
         _animator.SetFloat("Speed",agent.velocity.magnitude);
+       
+
     }
 
+    private void OnFootstep(AnimationEvent animationEvent)
+    {
+        if (animationEvent.animatorClipInfo.weight > 0.5f)
+        {
+            if (FootstepAudioClips.Length > 0)
+            {
+                var index = Random.Range(0, FootstepAudioClips.Length);
+                AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(transform.position), FootstepAudioVolume);
+            }
+        }
+    }
+    
     public void TeammateOff()
     {
         StartCoroutine(DissolveCo());
