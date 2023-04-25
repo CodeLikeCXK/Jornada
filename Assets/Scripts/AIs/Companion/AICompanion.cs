@@ -33,7 +33,7 @@ public class AICompanion : MonoBehaviour
     public bool IsDisappering = false;
     public float dissolverate = 0.0125f;
     public float RefreshRate = 0.025f;
-    public float DissolveThreshold = 0.5f;
+    private float DissolveTime;
 
     public AudioClip[] FootstepAudioClips;
     [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
@@ -65,6 +65,9 @@ public class AICompanion : MonoBehaviour
     
     [Tooltip("For Jump/Nav mesh link movements")]
     public AnimationCurve m_Curve;
+    
+    [Tooltip("AI State Machine implementing")]
+    //https://www.toptal.com/unity-unity3d/unity-ai-development-finite-state-machine-tutorial
 
 
     // Start is called before the first frame update
@@ -81,6 +84,7 @@ public class AICompanion : MonoBehaviour
             // Notice, that we pass 'this' as a context object so that Unity will highlight this object when clicked.
         }
 
+        DissolveTime = 1 / dissolverate;
     }
 
     void OnDrawGizmos()
@@ -177,17 +181,19 @@ public class AICompanion : MonoBehaviour
     
     public void TeammateOff()
     {
+        StopCoroutine(UnDissolveCo());
         StartCoroutine(DissolveCo());
         _MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
-        
-
+        IsDisappering = true;
     }
     
     public void TeammateOn()
     {
+        StopCoroutine(DissolveCo());
         StartCoroutine(UnDissolveCo());
         _MeshRenderer.shadowCastingMode = ShadowCastingMode.On;
-        
+        IsDisappering = false;
+
     }
 
     IEnumerator DissolveCo()
@@ -206,7 +212,6 @@ public class AICompanion : MonoBehaviour
                 yield return new WaitForSeconds(RefreshRate);
             }
         }
-
     }
     
     IEnumerator UnDissolveCo()
@@ -214,31 +219,17 @@ public class AICompanion : MonoBehaviour
         if (SkinnedMaterials.Length > 0)
         {
             float Counter = 1;
-            if(SkinnedMaterials[0].GetFloat("_DissolveThreshold") == 1)
+            Counter -= dissolverate;
+            for (int i = 0; i < SkinnedMaterials.Length; i++)
             {
-                Counter -= dissolverate;
-                for (int i = 0; i < SkinnedMaterials.Length; i++)
-                {
-                    SkinnedMaterials[i].SetFloat("_DissolveThreshold", Counter);
-                }
-                yield return new WaitForSeconds(RefreshRate);
+                SkinnedMaterials[i].SetFloat("_DissolveThreshold", Counter);
             }
-        }
-
-    }
-
-    public void SetDisappearing(ref bool IsDisappering)
-    {
-        if (SkinnedMaterials[0].GetFloat("_DissolveThreshold") == 1)
-        {
-            IsDisappering = true;
-        }
-        else
-        {
-            IsDisappering = false;
+            yield return new WaitForSeconds(RefreshRate);
         }
     }
 
+    
+    
     void OnDestroy()
     {
         for (int i = 0; i < SkinnedMaterials.Length; i++)

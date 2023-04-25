@@ -415,7 +415,6 @@ namespace StarterAssets
                 else
                 {
                     AI_Companion.GetComponent<AICompanion>().TeammateOn();
-
                 }
             }
         }
