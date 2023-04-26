@@ -184,7 +184,6 @@ public class AICompanion : MonoBehaviour
         StopCoroutine(UnDissolveCo());
         StartCoroutine(DissolveCo());
         _MeshRenderer.shadowCastingMode = ShadowCastingMode.Off;
-        IsDisappering = true;
     }
     
     public void TeammateOn()
@@ -192,8 +191,6 @@ public class AICompanion : MonoBehaviour
         StopCoroutine(DissolveCo());
         StartCoroutine(UnDissolveCo());
         _MeshRenderer.shadowCastingMode = ShadowCastingMode.On;
-        IsDisappering = false;
-
     }
 
     IEnumerator DissolveCo()
