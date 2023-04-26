@@ -37,6 +37,13 @@ public class AICompanion : MonoBehaviour
 
     public AudioClip[] FootstepAudioClips;
     [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
+    
+    //add jump related events
+    public delegate void LinkEvent();
+
+    public LinkEvent OnLinkStart;
+    public LinkEvent OnLinkEnd;
+
 
 
 
@@ -85,6 +92,11 @@ public class AICompanion : MonoBehaviour
         }
 
         DissolveTime = 1 / dissolverate;
+        
+        //add link handler
+        OnLinkStart += HandleLinkEnd;
+        OnLinkEnd += HandleLinkStart;
+
     }
 
     void OnDrawGizmos()
@@ -147,8 +159,10 @@ public class AICompanion : MonoBehaviour
     {
         if (agent.isOnOffMeshLink)
         {
+            OnLinkStart?.Invoke();
             StartCoroutine(Curve(agent, 0.5f));
             agent.CompleteOffMeshLink();
+            OnLinkEnd?.Invoke();
         }
     }
     
@@ -167,6 +181,16 @@ public class AICompanion : MonoBehaviour
         }
     }
 
+    private void HandleLinkStart()
+    {
+        _animator.SetTrigger("Jump");
+    }
+
+    private void HandleLinkEnd()
+    {
+        _animator.SetTrigger("Landed");
+    }
+    
     private void OnFootstep(AnimationEvent animationEvent)
     {
         if (animationEvent.animatorClipInfo.weight > 0.5f)
