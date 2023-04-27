@@ -44,7 +44,17 @@ public class AICompanion : MonoBehaviour
     public LinkEvent OnLinkStart;
     public LinkEvent OnLinkEnd;
 
+    
+    //assign animation
+    private int _animIDGrounded;
+    private int _animIDFreeFall;
 
+
+
+    
+    // timeout deltatime
+    private float _jumpTimeoutDelta;
+    private float _fallTimeoutDelta;
 
 
     [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
@@ -57,7 +67,6 @@ public class AICompanion : MonoBehaviour
     [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
     public float FallTimeout = 0.15f;
 
-    [Header("Player Grounded")]
     [Tooltip("If the character is grounded or not. Not part of the CharacterController built in grounded check")]
     public bool Grounded = true;
 
@@ -77,6 +86,12 @@ public class AICompanion : MonoBehaviour
     //https://www.toptal.com/unity-unity3d/unity-ai-development-finite-state-machine-tutorial
 
 
+    private void AssignAnimationIDs()
+    {
+        _animIDGrounded = Animator.StringToHash("Grounded");
+        _animIDFreeFall = Animator.StringToHash("FreeFall");
+    }
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -127,6 +142,8 @@ public class AICompanion : MonoBehaviour
     {
         Move();
         Jump();
+        GroundedCheck();
+
     }
 
     public void Move()
@@ -154,6 +171,21 @@ public class AICompanion : MonoBehaviour
        
 
     }
+    
+    private void GroundedCheck()
+    {
+        // set sphere position, with offset
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
+            transform.position.z);
+        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
+            QueryTriggerInteraction.Ignore);
+
+        // update animator if using character
+        if (_hasAnimator)
+        {
+            _animator.SetBool(_animIDGrounded, Grounded);
+        }
+    }
 
     public void Jump()
     {
@@ -163,6 +195,37 @@ public class AICompanion : MonoBehaviour
             StartCoroutine(Curve(agent, 0.5f));
             agent.CompleteOffMeshLink();
             OnLinkEnd?.Invoke();
+        }
+
+        if (Grounded)
+        {
+            // reset the fall timeout timer
+            _fallTimeoutDelta = FallTimeout;
+
+            // update animator if using character
+            if (_hasAnimator)
+            {
+                _animator.SetBool(_animIDFreeFall, false);
+            }
+        }
+        else
+        {
+            // reset the jump timeout timer
+            _jumpTimeoutDelta = JumpTimeout;
+
+            // fall timeout
+            if (_fallTimeoutDelta >= 0.0f)
+            {
+                _fallTimeoutDelta -= Time.deltaTime;
+            }
+            else
+            {
+                // update animator if using character
+                if (_hasAnimator)
+                {
+                    _animator.SetBool(_animIDFreeFall, true);
+                }
+            }
         }
     }
     
