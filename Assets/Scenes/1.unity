@@ -5164,7 +5164,8 @@ MonoBehaviour:
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
   LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
-  FootstepAudioClips: []
+  FootstepAudioClips:
+  - {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
   FootstepAudioVolume: 0.5
   JumpHeight: 1.2
   Gravity: -15
@@ -6620,10 +6621,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1395514801660512689, guid: ccbd1d01ebb5d5f4d8daa45c0ab225bb,
+        type: 3}
+      propertyPath: field of view
+      value: 40
+      objectReference: {fileID: 0}
     - target: {fileID: 2233844994893054673, guid: ccbd1d01ebb5d5f4d8daa45c0ab225bb,
         type: 3}
       propertyPath: m_Center.y
       value: 0.83
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766117421885351761, guid: ccbd1d01ebb5d5f4d8daa45c0ab225bb,
+        type: 3}
+      propertyPath: field of view
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 4515062853091242544, guid: ccbd1d01ebb5d5f4d8daa45c0ab225bb,
+        type: 3}
+      propertyPath: m_Lens.FieldOfView
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 4515062853091242545, guid: ccbd1d01ebb5d5f4d8daa45c0ab225bb,
         type: 3}
