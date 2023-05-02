@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
+using Unity.Mathematics;
 using UnityEngine.UI;
 
 public class AICompanion : MonoBehaviour
@@ -117,7 +118,7 @@ public class AICompanion : MonoBehaviour
     void OnDrawGizmos()
     {
         if (velocity)
-        {
+        { 
            Vector3 AIposition = transform.position;
            Gizmos.color = Color.green;
            Gizmos.DrawLine(AIposition, AIposition + agent.velocity);
@@ -127,7 +128,7 @@ public class AICompanion : MonoBehaviour
         {
             Gizmos.color=Color.black;
             var agentPath = agent.path;
-            Vector3 prevCorner = transform.position;
+            float3 prevCorner = transform.position;
             foreach (var Corner in agentPath.corners)
             {
                 Gizmos.DrawLine(prevCorner,Corner);
@@ -175,7 +176,7 @@ public class AICompanion : MonoBehaviour
     private void GroundedCheck()
     {
         // set sphere position, with offset
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
+        float3 spherePosition = new float3(transform.position.x, transform.position.y - GroundedOffset,
             transform.position.z);
         Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
             QueryTriggerInteraction.Ignore);
@@ -232,8 +233,8 @@ public class AICompanion : MonoBehaviour
     IEnumerator Curve(NavMeshAgent agent, float duration)
     {
         OffMeshLinkData data = agent.currentOffMeshLinkData;
-        Vector3 startPos = agent.transform.position;
-        Vector3 endPos = data.endPos + Vector3.up * agent.baseOffset;
+        float3 startPos = agent.transform.position;
+        float3 endPos = data.endPos + Vector3.up * agent.baseOffset;
         float normalizedTime = 0.0f;
         while (normalizedTime < 1.0f)
         {
@@ -260,7 +261,7 @@ public class AICompanion : MonoBehaviour
         {
             if (FootstepAudioClips.Length > 0)
             {
-                var index = Random.Range(0, FootstepAudioClips.Length);
+                var index = UnityEngine.Random.Range(0, FootstepAudioClips.Length);
                 AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(transform.position), FootstepAudioVolume);
             }
         }

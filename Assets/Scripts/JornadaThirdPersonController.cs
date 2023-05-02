@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cinemachine;
 using UnityEngine;
+using Unity.Mathematics;
 #if ENABLE_INPUT_SYSTEM 
 using UnityEngine.InputSystem;
 #endif
@@ -77,6 +79,10 @@ namespace StarterAssets
 
         [Tooltip("For locking the camera position on all axis")]
         public bool LockCameraPosition = false;
+        
+        [Tooltip("Set Camera FOVs")]
+        public float CameraFOV = 40.0f;
+        
 
         // cinemachine
         private float _cinemachineTargetYaw;
@@ -112,6 +118,10 @@ namespace StarterAssets
         private CharacterController _controller;
         private StarterAssetsInputs _input;
         private GameObject _mainCamera;
+        private GameObject _OverlayCamera;
+        private GameObject _PlayerFollowCamera;
+
+
 
         private const float _threshold = 0.01f;
 
@@ -140,6 +150,15 @@ namespace StarterAssets
             {
                 _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
             }
+            if (_OverlayCamera == null)
+            {
+                _OverlayCamera = GameObject.FindGameObjectWithTag("OverlayCamera");
+            }
+            if (_PlayerFollowCamera == null)
+            {
+                _PlayerFollowCamera = GameObject.FindGameObjectWithTag("PlayerFollowCamera");
+            }
+            
         }
 
         private void Start()
@@ -162,7 +181,7 @@ namespace StarterAssets
             _fallTimeoutDelta = FallTimeout;
 
             AIComponent = AI_Companion.GetComponent<AICompanion>();
-
+            SetFOV();
 
         }
 
@@ -174,6 +193,13 @@ namespace StarterAssets
             GroundedCheck();
             Move();
             CallCompanion();
+        }
+
+        private void SetFOV()
+        {
+            _PlayerFollowCamera.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = CameraFOV;
+            _OverlayCamera.GetComponent<Camera>().fieldOfView = CameraFOV;
+
         }
 
         private void LateUpdate()
@@ -193,7 +219,7 @@ namespace StarterAssets
         private void GroundedCheck()
         {
             // set sphere position, with offset
-            Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - GroundedOffset,
+            float3 spherePosition = new float3(transform.position.x, transform.position.y - GroundedOffset,
                 transform.position.z);
             Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
                 QueryTriggerInteraction.Ignore);
@@ -380,7 +406,7 @@ namespace StarterAssets
 
             // when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
             Gizmos.DrawSphere(
-                new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
+                new float3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
                 GroundedRadius);
         }
 
@@ -390,7 +416,7 @@ namespace StarterAssets
             {
                 if (FootstepAudioClips.Length > 0)
                 {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
+                    var index = UnityEngine.Random.Range(0, FootstepAudioClips.Length);
                     AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
                 }
             }
