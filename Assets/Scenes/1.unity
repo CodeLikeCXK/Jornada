@@ -4988,7 +4988,7 @@ PrefabInstance:
     - target: {fileID: 8430413667447772468, guid: 836f3a42d68390747bb3b0a47b37e4ee,
         type: 3}
       propertyPath: dissolverate
-      value: 0.0125
+      value: 0.0001
       objectReference: {fileID: 0}
     - target: {fileID: 8430413667447772468, guid: 836f3a42d68390747bb3b0a47b37e4ee,
         type: 3}
@@ -4999,6 +4999,11 @@ PrefabInstance:
         type: 3}
       propertyPath: walkingSpeed
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8430413667447772468, guid: 836f3a42d68390747bb3b0a47b37e4ee,
+        type: 3}
+      propertyPath: IsDisappering
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8430413667447772468, guid: 836f3a42d68390747bb3b0a47b37e4ee,
         type: 3}
@@ -5019,6 +5024,11 @@ PrefabInstance:
         type: 3}
       propertyPath: speedupDistance
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8430413667447772468, guid: 836f3a42d68390747bb3b0a47b37e4ee,
+        type: 3}
+      propertyPath: dissolvestrength
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 8430413667447772468, guid: 836f3a42d68390747bb3b0a47b37e4ee,
         type: 3}

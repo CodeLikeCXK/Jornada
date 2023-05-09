@@ -222,7 +222,7 @@ Material:
     - _groupSpecular: 1
     - _groupSurface: 1
     m_Colors:
-    - _BaseColor: {r: 0.1960784, g: 0.5678519, b: 0.8862745, a: 1}
+    - _BaseColor: {r: 0.3921568, g: 1.1357038, b: 1.772549, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _DarkColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionChannel: {r: 0, g: 0, b: 1, a: 0}

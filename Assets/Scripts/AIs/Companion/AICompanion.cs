@@ -35,6 +35,7 @@ public class AICompanion : MonoBehaviour
     public float dissolverate = 0.0125f;
     public float RefreshRate = 0.025f;
     private float DissolveTime;
+    public float dissolvestrength = 0.5f;
 
     public AudioClip[] FootstepAudioClips;
     [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
@@ -107,7 +108,12 @@ public class AICompanion : MonoBehaviour
             // Notice, that we pass 'this' as a context object so that Unity will highlight this object when clicked.
         }
 
-        DissolveTime = 1 / dissolverate;
+        DissolveTime = (1-dissolvestrength) / dissolverate;
+        for (int i = 0; i < SkinnedMaterials.Length; i++)
+        {
+            SkinnedMaterials[i].SetFloat("_DissolveThreshold", dissolvestrength);
+
+        }
         
         //add link handler
         OnLinkStart += HandleLinkEnd;
@@ -285,13 +291,12 @@ public class AICompanion : MonoBehaviour
     {
         if (SkinnedMaterials.Length > 0)
         {
-            float Counter = 0;
             while (SkinnedMaterials[0].GetFloat("_DissolveThreshold") < 1)
             {
-                Counter += dissolverate;
+                dissolvestrength += dissolverate;
                 for (int i = 0; i < SkinnedMaterials.Length; i++)
                 {
-                    SkinnedMaterials[i].SetFloat("_DissolveThreshold", Counter);
+                    SkinnedMaterials[i].SetFloat("_DissolveThreshold", dissolvestrength);
 
                 }
                 yield return new WaitForSeconds(RefreshRate);
@@ -303,11 +308,10 @@ public class AICompanion : MonoBehaviour
     {
         if (SkinnedMaterials.Length > 0)
         {
-            float Counter = 1;
-            Counter -= dissolverate;
+            dissolvestrength -= dissolverate;
             for (int i = 0; i < SkinnedMaterials.Length; i++)
             {
-                SkinnedMaterials[i].SetFloat("_DissolveThreshold", Counter);
+                SkinnedMaterials[i].SetFloat("_DissolveThreshold", dissolvestrength);
             }
             yield return new WaitForSeconds(RefreshRate);
         }
@@ -319,7 +323,7 @@ public class AICompanion : MonoBehaviour
     {
         for (int i = 0; i < SkinnedMaterials.Length; i++)
         {
-            SkinnedMaterials[i].SetFloat("_DissolveThreshold", 0);
+            SkinnedMaterials[i].SetFloat("_DissolveThreshold", dissolvestrength);
 
         }
     }
