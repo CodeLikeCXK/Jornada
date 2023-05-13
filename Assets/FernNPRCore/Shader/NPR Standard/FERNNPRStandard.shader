@@ -6,7 +6,7 @@ Shader "FernRender/URP/FERNNPRStandard"
         _group ("Surface", float) = 0
         [Space()]
         [Tex(Surface, _BaseColor)] _BaseMap ("Base Map", 2D) = "white" { }
-        [HideInInspector][HDR] _BaseColor ("Base Color", color) = (1, 1, 1, 1)
+        [HideInInspector] _BaseColor ("Base Color", color) = (0.5, 0.5, 0.5, 1)
         [SubToggle(Surface, _NORMALMAP)] _BumpMapKeyword("Use Normal Map", Float) = 0.0
         [Tex(Surface_NORMALMAP)] _BumpMap ("Normal Map", 2D) = "bump" { }
         [Sub(Surface_NORMALMAP)] _BumpScale("Scale", Float) = 1.0
@@ -26,11 +26,11 @@ Shader "FernRender/URP/FERNNPRStandard"
         [Main(Diffuse, _, off, off)]
         _group1 ("DiffuseSettings", float) = 1
         [Space()]
-        [KWEnum(Diffuse, CelShading, _CELLSHADING, RampShading, _RAMPSHADING, CellBandsShading, _CELLBANDSHADING, PBRShading, _LAMBERTIAN)] _enum_diffuse ("Shading Mode", float) = 0
-        [SubToggle(Diffuse)] _UseHalfLambert ("Use HalfLambert (More Flatter)", float) = 1
+        [KWEnum(Diffuse, CelShading, _CELLSHADING, RampShading, _RAMPSHADING, CellBandsShading, _CELLBANDSHADING, PBRShading, _LAMBERTIAN)] _enum_diffuse ("Shading Mode", float) = 3
+        [SubToggle(Diffuse)] _UseHalfLambert ("Use HalfLambert (More Flatter)", float) = 0
         [SubToggle(Diffuse)] _UseRadianceOcclusion ("Radiance Occlusion", float) = 0
         [Sub(Diffuse_LAMBERTIAN._CELLSHADING._CELLBANDSHADING)] [HDR] _HighColor ("Hight Color", Color) = (1,1,1,1)
-        [Sub(Diffuse_LAMBERTIAN._CELLSHADING._CELLBANDSHADING)] _DarkColor ("Dark Color", Color) = (0.5,0.5,0.5,1)
+        [Sub(Diffuse_LAMBERTIAN._CELLSHADING._CELLBANDSHADING)] _DarkColor ("Dark Color", Color) = (0,0,0,1)
         [Sub(Diffuse._CELLBANDSHADING)] _CellBands ("Cell Bands(Int)", Range(1, 10)) = 1
         [Sub(Diffuse_CELLSHADING._CELLBANDSHADING)] _CELLThreshold ("Cell Threshold", Range(0.01,1)) = 0.5
         [Sub(Diffuse_CELLSHADING)] _CELLSmoothing ("Cell Smoothing", Range(0.001,1)) = 0.001
@@ -103,14 +103,17 @@ Shader "FernRender/URP/FERNNPRStandard"
         [Space()]
         [SubToggle(AdditionalLightSetting)] _Is_Filter_LightColor("Is Filter LightColor", Float) = 1
         [Sub(AdditionalLightSetting)] _LightIntensityClamp("Additional Light Intensity Clamp", Range(0, 8)) = 1
-        
+
         [Main(Outline, _, off, off)]
         _groupOutline ("OutlineSettings", float) = 1
         [Space()]
         [SubToggle(Outline, _OUTLINE)] _Outline("Use Outline", Float) = 0.0
         [Sub(Outline._OUTLINE)] _OutlineColor ("Outline Color", Color) = (0,0,0,0)
         [Sub(Outline._OUTLINE)] _OutlineWidth ("Outline Width", Range(0, 10)) = 1
-        
+        [KWEnum(Outline, None, _, UV8.RG, _SMOOTHEDNORMAL)] _enum_outline_smoothed("Smoothed Normal", float) = 0
+        [KWEnum(Outline, None, _, VertexColor.A, _OUTLINEWIDTHWITHVERTEXTCOLORA, UV8.A, _OUTLINEWIDTHWITHUV8A)] _enum_outline_width("Override Outline Width", float) = 0
+        [KWEnum(Outline, None, _, BaseMap, _OUTLINECOLORBLENDBASEMAP, VertexColor, _OUTLINECOLORBLENDVERTEXCOLOR)] _enum_outline_color("Blend Outline Color", float) = 0
+
         // AI Core has no release
         [Main(AISetting, _, off, off)]
         _groupAI ("AISetting", float) = 1
@@ -139,6 +142,7 @@ Shader "FernRender/URP/FERNNPRStandard"
         [SubEnum(RenderSetting, Off, 0, On, 1)] _DepthPrePass("Depth PrePass", Float) = 0
         [SubEnum(RenderSetting, Off, 0, On, 1)] _CasterShadow("Caster Shadow", Float) = 1
         [Sub(RenderSetting)]_Cutoff("Alpha Clipping", Range(0.0, 1.0)) = 0.5
+        [Sub(RenderSetting)]_ZOffset("Z Offset", Range(-1.0, 1.0)) = 0
         [Queue(RenderSetting)] _QueueOffset("Queue offset", Range(-50, 50)) = 0.0
 
     }
@@ -175,7 +179,7 @@ Shader "FernRender/URP/FERNNPRStandard"
             Name "ForwardLit"
             Tags{"LightMode" = "UniversalForward"}
 
-            Blend[_SrcBlend][_DstBlend]
+            Blend[_SrcBlend][_DstBlend], [_SrcBlendAlpha][_DstBlendAlpha]
             ZWrite[_ZWrite]
             Cull[_Cull]
 
@@ -201,10 +205,14 @@ Shader "FernRender/URP/FERNNPRStandard"
             #pragma shader_feature_local _USEEMISSIONTEX
 
             // -------------------------------------
-            // Effect Keyword
-            #pragma shader_feature_local _USEDISSOLVEEFFECT
-            
+            // Fern Keywords
+            #pragma shader_feature_local_vertex _PERSPECTIVEREMOVE
+
             // -------------------------------------
+            // Effect Keyword
+            #pragma shader_feature_local_fragment _USEDISSOLVEEFFECT
+            
+                 // -------------------------------------
             // Universal Pipeline keywords
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _ADDITIONAL_LIGHTS_VERTEX _ADDITIONAL_LIGHTS
@@ -276,7 +284,7 @@ Shader "FernRender/URP/FERNNPRStandard"
             #pragma fragment ShadowPassFragment
 
             #include "NPRStandardInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
+            #include "../ShaderLibrary/ShadowCasterPass.hlsl"
             ENDHLSL
         }
         
@@ -362,6 +370,10 @@ Shader "FernRender/URP/FERNNPRStandard"
             #pragma only_renderers gles gles3 glcore d3d11
             #pragma target 3.0
 
+            // -------------------------------------
+            // Fern Keywords
+            #pragma shader_feature_local_vertex _PERSPECTIVEREMOVE
+
             //--------------------------------------
             // GPU Instancing
             #pragma multi_compile_instancing
@@ -375,7 +387,7 @@ Shader "FernRender/URP/FERNNPRStandard"
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
 
             #include "NPRStandardInput.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
+            #include "../ShaderLibrary/DepthOnlyPass.hlsl"
             ENDHLSL
         }
 
@@ -402,6 +414,10 @@ Shader "FernRender/URP/FERNNPRStandard"
             #pragma shader_feature_local _ _DETAIL_MULX2 _DETAIL_SCALED
             #pragma shader_feature_local_fragment _ALPHATEST_ON
             #pragma shader_feature_local_fragment _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+
+            // -------------------------------------
+            // Fern Keywords
+            #pragma shader_feature_local_vertex _PERSPECTIVEREMOVE
 
             // -------------------------------------
             // Unity defined keywords
@@ -444,7 +460,6 @@ Shader "FernRender/URP/FERNNPRStandard"
             
             #pragma shader_feature_local_fragment _USEDISSOLVEEFFECT
 
-
             #pragma shader_feature_local_fragment _SPECGLOSSMAP
 
             #include "NPRStandardInput.hlsl"
@@ -459,13 +474,22 @@ Shader "FernRender/URP/FERNNPRStandard"
             Name "OutLine"
             Tags {"LightMode" = "Outline" }
             Cull Front
-            ZWrite[_ZWrite]
-            BlendOp Add, Max
+            ZWrite [_ZWrite]
             ZTest LEqual
+            Blend [_SrcBlend] [_DstBlend]
             Offset 1, 1
 
             HLSLPROGRAM
-            #pragma multi_compile _ _OUTLINE
+            
+            #pragma shader_feature_local _OUTLINE
+            
+            // -------------------------------------
+            // Fern Keywords
+            #pragma shader_feature_local_vertex _PERSPECTIVEREMOVE
+            #pragma shader_feature_local_vertex _SMOOTHEDNORMAL
+            #pragma shader_feature_local_vertex _OUTLINEWIDTHWITHVERTEXTCOLORA _OUTLINEWIDTHWITHUV8A
+            #pragma shader_feature_local_fragment _OUTLINECOLORBLENDBASEMAP _OUTLINECOLORBLENDVERTEXCOLOR
+            
             #pragma vertex NormalOutLineVertex
             #pragma fragment NormalOutlineFragment
 
@@ -473,7 +497,6 @@ Shader "FernRender/URP/FERNNPRStandard"
             #include "../ShaderLibrary/NormalOutline.hlsl"
             ENDHLSL
         }
-        
                 
         Pass
         {
