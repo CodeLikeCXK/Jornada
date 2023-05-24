@@ -181,14 +181,7 @@ public class AICompanion : MonoBehaviour
     
     private void GroundedCheck()
     {
-        // set sphere position, with offset
-        float3 spherePosition = new float3(transform.position.x, transform.position.y - GroundedOffset,
-            transform.position.z);
-        Grounded = Physics.CheckSphere(spherePosition, GroundedRadius, GroundLayers,
-            QueryTriggerInteraction.Ignore);
-
-        // update animator if using character
-        if (_hasAnimator)
+        if(agent.isOnNavMesh && _hasAnimator)
         {
             _animator.SetBool(_animIDGrounded, Grounded);
         }
@@ -204,7 +197,7 @@ public class AICompanion : MonoBehaviour
             OnLinkEnd?.Invoke();
         }
 
-        if (Grounded)
+        if (agent.isOnNavMesh)
         {
             // reset the fall timeout timer
             _fallTimeoutDelta = FallTimeout;
