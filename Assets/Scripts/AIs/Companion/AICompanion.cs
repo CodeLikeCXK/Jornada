@@ -189,44 +189,19 @@ public class AICompanion : MonoBehaviour
 
     public void Jump()
     {
-        if (agent.isOnOffMeshLink)
+        if (agent.isOnOffMeshLink && agent.transform.position.z != playerTransform.position.z)
         {
             OnLinkStart?.Invoke();
             StartCoroutine(Curve(agent, 0.5f));
             agent.CompleteOffMeshLink();
             OnLinkEnd?.Invoke();
         }
-
-        if (agent.isOnNavMesh)
+        
+        if(agent.isOnNavMesh)
         {
-            // reset the fall timeout timer
-            _fallTimeoutDelta = FallTimeout;
-
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetBool(_animIDFreeFall, false);
-            }
+            _animator.SetTrigger("Landed");
         }
-        else
-        {
-            // reset the jump timeout timer
-            _jumpTimeoutDelta = JumpTimeout;
 
-            // fall timeout
-            if (_fallTimeoutDelta >= 0.0f)
-            {
-                _fallTimeoutDelta -= Time.deltaTime;
-            }
-            else
-            {
-                // update animator if using character
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDFreeFall, true);
-                }
-            }
-        }
     }
     
     IEnumerator Curve(NavMeshAgent agent, float duration)
