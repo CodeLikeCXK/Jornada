@@ -17,7 +17,7 @@ public class AICompanion : MonoBehaviour
     public float offset = 1.0f;
     public float walkingSpeed = 2.0f;
     public float runningSpeed = 5.0f;
-    float Timer = 0.0f;
+    public float Timer = 0.0f;
     public float MaxTime = 1.0f;
     public bool velocity;
     public bool desiredvelocity;
@@ -45,8 +45,12 @@ public class AICompanion : MonoBehaviour
 
     public LinkEvent OnLinkStart;
     public LinkEvent OnLinkEnd;
+    bool Jumping = false;
+    public float JumpTimer = 0.0f;
+    public float jumpCooldown = 5f;
 
-    
+
+
     //assign animation
     private int _animIDGrounded;
     private int _animIDFreeFall;
@@ -116,8 +120,8 @@ public class AICompanion : MonoBehaviour
         }
         
         //add link handler
-        OnLinkStart += HandleLinkEnd;
-        OnLinkEnd += HandleLinkStart;
+        OnLinkStart += HandleLinkStart;
+        OnLinkEnd += HandleLinkEnd;
 
     }
 
@@ -150,6 +154,10 @@ public class AICompanion : MonoBehaviour
         Move();
         Jump();
         GroundedCheck();
+        if(JumpTimer >= 0f) 
+        {
+            JumpTimer -= Time.deltaTime; 
+        }
 
     }
 
@@ -189,43 +197,12 @@ public class AICompanion : MonoBehaviour
 
     public void Jump()
     {
-        if (agent.isOnOffMeshLink)
+        if (agent.isOnOffMeshLink && JumpTimer < 0.0f)
         {
             OnLinkStart?.Invoke();
             StartCoroutine(Curve(agent, 0.5f));
             agent.CompleteOffMeshLink();
             OnLinkEnd?.Invoke();
-        }
-
-        if (agent.isOnNavMesh)
-        {
-            // reset the fall timeout timer
-            _fallTimeoutDelta = FallTimeout;
-
-            // update animator if using character
-            if (_hasAnimator)
-            {
-                _animator.SetBool(_animIDFreeFall, false);
-            }
-        }
-        else
-        {
-            // reset the jump timeout timer
-            _jumpTimeoutDelta = JumpTimeout;
-
-            // fall timeout
-            if (_fallTimeoutDelta >= 0.0f)
-            {
-                _fallTimeoutDelta -= Time.deltaTime;
-            }
-            else
-            {
-                // update animator if using character
-                if (_hasAnimator)
-                {
-                    _animator.SetBool(_animIDFreeFall, true);
-                }
-            }
         }
     }
     
@@ -251,6 +228,7 @@ public class AICompanion : MonoBehaviour
 
     private void HandleLinkEnd()
     {
+        JumpTimer = jumpCooldown;
         _animator.SetTrigger("Landed");
     }
     
